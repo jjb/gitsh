@@ -24,8 +24,11 @@ lib/gitsh/version.rb
 gitsh-*.tar.gz
 vendor/gems
 *.o
+
+# Ruby C-extension
 *.bundle
 mkmf.log
+ext/.RUBYARCHDIR*
 
 # Sub-repositories for release
 gh-pages
