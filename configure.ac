@@ -35,7 +35,7 @@ if test "$newer" == "$srcdir/Gemfile.lock"; then
 fi
 
 current_dir=$PWD
-cd "$srcdir/readline"
+cd "$srcdir/ext"
 AS_IF(
     [$RUBY extconf.rb],
     [],
