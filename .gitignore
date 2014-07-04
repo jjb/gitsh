@@ -24,6 +24,8 @@ lib/gitsh/version.rb
 gitsh-*.tar.gz
 vendor/gems
 *.o
+*.bundle
+mkmf.log
 
 # Sub-repositories for release
 gh-pages
