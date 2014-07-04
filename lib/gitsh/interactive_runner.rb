@@ -3,8 +3,8 @@ require 'gitsh/completer'
 require 'gitsh/error'
 require 'gitsh/history'
 require 'gitsh/interpreter'
+require 'gitsh/line_editor_blank_filter'
 require 'gitsh/prompter'
-require 'gitsh/readline_blank_filter'
 require 'gitsh/script_runner'
 require 'gitsh/terminal'
 
@@ -13,7 +13,7 @@ module Gitsh
     BLANK_LINE_REGEX = /^\s*$/
 
     def initialize(opts)
-      @readline = opts.fetch(:readline) { ReadlineBlankFilter.new(Readline) }
+      @line_editor = opts.fetch(:line_editor) { LineEditorBlankFilter.new(Readline) }
       @env = opts[:env]
       @history = opts.fetch(:history) { History.new(@env, @readline) }
       @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
@@ -23,7 +23,7 @@ module Gitsh
 
     def run
       history.load
-      setup_readline
+      setup_line_editor
       handle_window_resize
       greet_user
       load_gitshrc
@@ -34,12 +34,12 @@ module Gitsh
 
     private
 
-    attr_reader :history, :readline, :env, :interpreter, :terminal,
+    attr_reader :history, :line_editor, :env, :interpreter, :terminal,
       :script_runner
 
-    def setup_readline
-      readline.completion_append_character = nil
-      readline.completion_proc = Completer.new(readline, env)
+    def setup_line_editor
+      line_editor.completion_append_character = nil
+      line_editor.completion_proc = Completer.new(line_editor, env)
     end
 
     def handle_window_resize
@@ -81,7 +81,7 @@ module Gitsh
     end
 
     def read_command
-      command = readline.readline(prompt, true)
+      command = line_editor.readline(prompt, true)
       if command && command.match(BLANK_LINE_REGEX)
         env.fetch('gitsh.defaultCommand') { 'status' }
       else
