@@ -12,9 +12,7 @@ describe Gitsh::History do
   end
 
   let(:env) { { 'gitsh.historyFile' => @history_file.path } }
-  let(:line_editor) do
-    Class.new.tap { |line_editor| line_editor::HISTORY = [] }
-  end
+  let(:line_editor) { stub('LineEditor', history: []) }
 
   describe '#load' do
     it 'adds the saved history to the line editor' do
@@ -22,7 +20,7 @@ describe Gitsh::History do
 
       described_class.new(env, line_editor).load
 
-      expect(line_editor::HISTORY).to eq ['init', 'add -p', 'commit']
+      expect(line_editor.history).to eq ['init', 'add -p', 'commit']
     end
 
     it 'does nothing when the history file does not exist' do
@@ -32,13 +30,13 @@ describe Gitsh::History do
 
       history.load
 
-      expect(line_editor::HISTORY).to be_empty
+      expect(line_editor.history).to be_empty
     end
   end
 
   describe '#save' do
     it 'saves the history from the line editor to disk' do
-      line_editor::HISTORY.concat(['init', 'add .', 'commit -m "Initial"'])
+      line_editor.history.concat(['init', 'add .', 'commit -m "Initial"'])
 
       described_class.new(env, line_editor).save
 
@@ -48,7 +46,7 @@ describe Gitsh::History do
     end
 
     it 'is limited by the gitsh.historySize setting' do
-      line_editor::HISTORY.concat(['init', 'add .', 'commit -m "Initial"'])
+      line_editor.history.concat(['init', 'add .', 'commit -m "Initial"'])
       env['gitsh.historySize'] = 2
 
       described_class.new(env, line_editor).save

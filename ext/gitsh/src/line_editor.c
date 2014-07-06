@@ -4,6 +4,7 @@ VALUE readline = Qnil;
 VALUE gitsh = Qnil;
 VALUE line_editor = Qnil;
 
+VALUE line_editor_history(VALUE);
 VALUE line_editor_set_completion_append_character(VALUE, VALUE);
 VALUE line_editor_set_completion_proc(VALUE, VALUE);
 VALUE line_editor_set_input(VALUE, VALUE);
@@ -15,14 +16,14 @@ VALUE line_editor_emacs_editing_mode(VALUE);
 void
 Init_line_editor()
 {
-    VALUE history = rb_intern("HISTORY");
-
     rb_require("readline");
 
     readline = rb_const_get(rb_cObject, rb_intern("Readline"));
     gitsh = rb_define_module("Gitsh");
     line_editor = rb_define_module_under(gitsh, "LineEditor");
 
+    rb_define_singleton_method(line_editor, "history",
+        line_editor_history, 0);
     rb_define_singleton_method(line_editor, "completion_append_character=",
         line_editor_set_completion_append_character, 1);
     rb_define_singleton_method(line_editor, "completion_proc=",
@@ -37,8 +38,12 @@ Init_line_editor()
         line_editor_line_buffer, 0);
     rb_define_singleton_method(line_editor, "emacs_editing_mode",
         line_editor_emacs_editing_mode, 0);
+}
 
-    rb_const_set(line_editor, history, rb_const_get(readline, history));
+VALUE
+line_editor_history(VALUE module)
+{
+    return rb_const_get(readline, rb_intern("HISTORY"));
 }
 
 VALUE

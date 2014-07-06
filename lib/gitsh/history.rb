@@ -10,14 +10,14 @@ module Gitsh
 
     def load
       File.read(history_file_path).lines.each do |command|
-        line_editor::HISTORY << command.chomp
+        line_editor.history << command.chomp
       end
     rescue Errno::ENOENT
     end
 
     def save
       File.open(history_file_path, 'w') do |file|
-        line_editor::HISTORY.to_a.last(history_size).each do |command|
+        line_editor.history.to_a.last(history_size).each do |command|
           file << "#{command}\n"
         end
       end
