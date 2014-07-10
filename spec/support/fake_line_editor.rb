@@ -10,14 +10,20 @@ class FakeLineEditor < ModuleDelegator
   end
 
   def readline(prompt, add_to_history)
+    p :setting_input
     module_delegator_target.input = input_read
+    p :setting_output
     module_delegator_target.output = output_file
+    p :clearing_queue
     prompt_queue.clear
+    p :pushing_to_queue
     prompt_queue << prompt
+    p :calling_readline
     module_delegator_target.readline(prompt, add_to_history)
   end
 
   def type(string)
+    puts "TYPING! #{string}"
     input_write << "#{string}\n"
   end
 
