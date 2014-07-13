@@ -6,6 +6,7 @@
 #include <errno.h>
 
 #include <readline/readline.h>
+#include <readline/history.h>
 
 VALUE m_readline = Qnil;
 VALUE gitsh = Qnil;
@@ -19,6 +20,8 @@ VALUE line_editor_set_output(VALUE, VALUE);
 VALUE line_editor_readline(VALUE, VALUE, VALUE);
 VALUE line_editor_line_buffer(VALUE);
 VALUE line_editor_emacs_editing_mode(VALUE);
+
+static VALUE readline_instream;
 
 static int
 readline_event()
@@ -41,10 +44,10 @@ Init_line_editor()
     rl_readline_name = (char*)"gitsh";
 
     rl_event_hook = readline_event;
-    rl_initialize();
+    using_history();
 
-    rb_require("readline");
-    m_readline = rb_const_get(rb_cObject, rb_intern("Readline"));
+    //rb_require("readline");
+    //m_readline = rb_const_get(rb_cObject, rb_intern("Readline"));
 
     gitsh = rb_define_module("Gitsh");
     line_editor = rb_define_module_under(gitsh, "LineEditor");
@@ -65,6 +68,8 @@ Init_line_editor()
         line_editor_line_buffer, 0);
     rb_define_singleton_method(line_editor, "emacs_editing_mode",
         line_editor_emacs_editing_mode, 0);
+
+    rb_gc_register_address(&readline_instream);
 }
 
 VALUE
@@ -96,6 +101,7 @@ line_editor_set_input(VALUE module, VALUE input)
     Check_Type(input, T_FILE);
     GetOpenFile(input, fp);
     fd = rb_cloexec_dup(fp->fd);
+    printf("set_input FD: %d\n", fd);
     if (fd == -1) {
         rb_sys_fail("dup");
     }
@@ -106,8 +112,10 @@ line_editor_set_input(VALUE module, VALUE input)
         errno = save_errno;
         rb_sys_fail("fdopen");
     }
+    printf("Final FD: %d\n", fileno(f));
     rl_instream = f;
 
+    readline_instream = input;
     return input;
 }
 
@@ -139,6 +147,7 @@ line_editor_set_output(VALUE module, VALUE output)
 VALUE
 readline_get(VALUE prompt)
 {
+    printf("instream: %d\n", fileno(rl_instream));
     char *input = readline(StringValuePtr(prompt));
     printf("got: %s\n", input);
 
@@ -150,6 +159,15 @@ line_editor_readline(VALUE module, VALUE prompt, VALUE add_to_history)
 {
     char *input;
     int exception;
+
+    if (readline_instream) {
+        rb_io_t *ifp;
+        rb_io_check_initialized(ifp = RFILE(rb_io_taint_check(readline_instream))->fptr);
+        //if (ifp->fd < 0) {
+            //clear_rl_instream();
+            //rb_raise(rb_eIOError, "closed readline input");
+        //}
+    }
 
     rb_str_locktmp(prompt);
     input = (char*)rb_protect(readline_get, prompt, &exception);

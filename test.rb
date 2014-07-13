@@ -1,7 +1,7 @@
-require 'readline'
-require './ext/gitsh/line_editor'
-
+#require 'readline'
 #line_editor = Readline
+
+require './ext/gitsh/line_editor'
 line_editor = Gitsh::LineEditor
 
 read, write = IO.pipe
