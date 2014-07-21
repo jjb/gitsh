@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -46,8 +47,8 @@ Init_line_editor()
     rl_event_hook = readline_event;
     using_history();
 
-    //rb_require("readline");
-    //m_readline = rb_const_get(rb_cObject, rb_intern("Readline"));
+    rb_require("readline");
+    m_readline = rb_const_get(rb_cObject, rb_intern("Readline"));
 
     gitsh = rb_define_module("Gitsh");
     line_editor = rb_define_module_under(gitsh, "LineEditor");
@@ -101,7 +102,6 @@ line_editor_set_input(VALUE module, VALUE input)
     Check_Type(input, T_FILE);
     GetOpenFile(input, fp);
     fd = rb_cloexec_dup(fp->fd);
-    printf("set_input FD: %d\n", fd);
     if (fd == -1) {
         rb_sys_fail("dup");
     }
@@ -112,7 +112,6 @@ line_editor_set_input(VALUE module, VALUE input)
         errno = save_errno;
         rb_sys_fail("fdopen");
     }
-    printf("Final FD: %d\n", fileno(f));
     rl_instream = f;
 
     readline_instream = input;
@@ -147,9 +146,7 @@ line_editor_set_output(VALUE module, VALUE output)
 VALUE
 readline_get(VALUE prompt)
 {
-    printf("instream: %d\n", fileno(rl_instream));
     char *input = readline(StringValuePtr(prompt));
-    printf("got: %s\n", input);
 
     return (VALUE)input;
 }
@@ -173,7 +170,6 @@ line_editor_readline(VALUE module, VALUE prompt, VALUE add_to_history)
     input = (char*)rb_protect(readline_get, prompt, &exception);
     rb_str_unlocktmp(prompt);
     if (exception) {
-        printf("exception: %d\n", exception);
         rl_free_line_state();
         rl_cleanup_after_signal();
         rl_deprep_terminal();

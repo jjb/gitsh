@@ -1,0 +1,7 @@
+Building the native extension is tricky. It must be linked against the right
+version of ruby.
+
+Something like this should work:
+
+    RUBY=$(which ruby) ./configure
+    make
