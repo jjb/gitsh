@@ -39,7 +39,7 @@ cd "$srcdir/ext/gitsh"
 AS_IF(
     [$RUBY extconf.rb],
     [],
-    AC_MSG_ERROR(Failed to build Ruby extension)
+    AC_MSG_ERROR(Failed to configure Ruby extension)
 )
 cd "$current_dir"
 
