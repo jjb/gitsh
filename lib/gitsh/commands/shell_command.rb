@@ -22,11 +22,15 @@ module Gitsh
       attr_reader :env, :command, :args, :shell_command_runner
 
       def command_with_arguments
-        [command, arg_values].flatten
+        [
+          '/bin/sh',
+          '-c',
+          [command, arg_values].flatten.join(' '),
+        ]
       end
 
       def arg_values
-        args.values(env)
+        args.values(env).map { |arg| arg.gsub(' ', '\ ') }
       end
     end
   end

@@ -17,7 +17,7 @@ describe Gitsh::Commands::ShellCommand do
       result = command.execute
 
       expect(mock_runner).to have_received(:run).with(
-        ["echo", "Hello", "world"],
+        ['/bin/sh', '-c', 'echo Hello\ world'],
         env,
       )
       expect(result).to eq expected_result
