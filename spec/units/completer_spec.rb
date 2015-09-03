@@ -103,7 +103,7 @@ describe Gitsh::Completer do
   end
 
   def build_completer(options)
-    line_editor = stub('LineEditor', line_buffer: options.fetch(:input))
+    line_editor = double('LineEditor', line_buffer: options.fetch(:input))
     env = double('Environment', {
       git_commands: options.fetch(:git_commands, %w( add commit )),
       git_aliases: options.fetch(:git_aliases, %w( graph )),

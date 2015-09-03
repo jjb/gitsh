@@ -12,7 +12,7 @@ describe Gitsh::History do
   end
 
   let(:env) { { 'gitsh.historyFile' => @history_file.path } }
-  let(:line_editor) { stub('LineEditor', history: []) }
+  let(:line_editor) { double('LineEditor', history: []) }
 
   describe '#load' do
     it 'adds the saved history to the line editor' do

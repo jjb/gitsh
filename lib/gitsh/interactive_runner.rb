@@ -17,7 +17,7 @@ module Gitsh
         LineEditorBlankFilter.new(Gitsh::LineEditor)
       end
       @env = opts[:env]
-      @history = opts.fetch(:history) { History.new(@env, @readline) }
+      @history = opts.fetch(:history) { History.new(@env, @line_editor) }
       @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
       @terminal = opts.fetch(:terminal) { Terminal.instance }
       @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
