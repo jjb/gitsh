@@ -1,3 +1,6 @@
+_This is a friendly fork of the amazing gitsh project, trying to bring it up to date with modern ruby and OSes._
+
+
 # <img src="assets/gitsh-logo.svg" alt="gitsh" width="180">
 
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
