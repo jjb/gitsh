@@ -1,5 +1,6 @@
 # This works?
 
+* check out THIS FORK `cd src; git clone https://github.com/jjb/gitsh.git; cd gitsh`
 * `brew install readline automake`
 * `brew link readline --force`
 * `RUBY_CONFIGURE_OPTS="--with-readline-dir=$(brew --prefix readline)" rbenv install 3.3.5`
